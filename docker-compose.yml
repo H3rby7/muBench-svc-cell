@@ -1,0 +1,20 @@
+# docker-compose for local testing
+services:
+  cell:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    tty: true
+    ports:
+      - 80:8080
+    volumes:
+      # Files that are required by runtime
+      - ./example:/app/MSConfig
+    environment:
+    - APP=ms-500
+    - K8S_APP=ms-500
+    - ZONE=default
+    - PN=4
+    - TN=16
+    - LOG_LEVEL=DEBUG
