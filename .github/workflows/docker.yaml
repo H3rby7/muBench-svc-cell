@@ -2,9 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ $default-branch ]
-  pull_request:
-    branches: [ $default-branch ]
+    branches: 
+      - main
 
 env:
   IMAGE_BASE: lujoka/mub-cell
@@ -14,6 +13,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
 
     steps:
       - name: Check out the repo
