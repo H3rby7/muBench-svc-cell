@@ -5,6 +5,9 @@ on:
     branches: 
       - main
 
+env:
+  IMAGE_NAME: lujoka/mub-cell
+
 jobs:
 
   build:
@@ -30,7 +33,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: lujoka/mub-cell
+          images: ${{ env.IMAGE_NAME}}
 
       - name: Build and push Docker image
         id: push
@@ -45,6 +48,6 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
