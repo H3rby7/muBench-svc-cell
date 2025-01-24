@@ -10,6 +10,8 @@ The software that implements a service-cell is `CellController-mp.py`, which exp
 
 This adaption provides better handling within Kubernetes, as it improves logging (to stdout/stderr) and runs the service cell as main process, which allows Kubernetes to detect failures and restart the pods.
 
+Automatic docker build+publish via github actions ensuring consistency across updates.
+
 Also provides a local docker-compose variant, mounting necessary files and parameters to test a cell locally.
 
     docker-compose up -d
