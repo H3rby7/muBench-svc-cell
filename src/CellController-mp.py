@@ -199,9 +199,12 @@ def start_worker():
         start_local_processing = time.time()
         body = run_internal_service(my_internal_service)
         local_processing_latency = time.time() - start_local_processing
-        INTERNAL_PROCESSING.labels(ZONE, K8S_APP, request.method, request.path).observe(local_processing_latency*1000)
-        INTERNAL_PROCESSING_BUCKET.labels(ZONE, K8S_APP, request.method, request.path).observe(local_processing_latency*1000)
-        RESPONSE_SIZE.labels(ZONE, K8S_APP, request.method, request.path, request.remote_addr, ID).observe(len(body))
+        INTERNAL_PROCESSING.labels(ZONE, K8S_APP, request.method, request.path) \
+            .observe(local_processing_latency*1000)
+        INTERNAL_PROCESSING_BUCKET.labels(ZONE, K8S_APP, request.method, request.path) \
+            .observe(local_processing_latency*1000)
+        RESPONSE_SIZE.labels(ZONE, K8S_APP, request.method, request.path, request.remote_addr, ID) \
+            .observe(len(body))
         app.logger.info("len(body): %d" % len(body))
         app.logger.info("############### INTERNAL SERVICE FINISHED! ###############")
 
@@ -223,11 +226,15 @@ def start_worker():
 
         response = make_response(body)
         response.mimetype = "text/plain"
-        EXTERNAL_PROCESSING.labels(ZONE, K8S_APP, request.method, request.path).observe((time.time() - start_external_request_processing)*1000)
-        EXTERNAL_PROCESSING_BUCKET.labels(ZONE, K8S_APP, request.method, request.path).observe((time.time() - start_external_request_processing)*1000)
+        EXTERNAL_PROCESSING.labels(ZONE, K8S_APP, request.method, request.path) \
+            .observe((time.time() - start_external_request_processing)*1000)
+        EXTERNAL_PROCESSING_BUCKET.labels(ZONE, K8S_APP, request.method, request.path) \
+            .observe((time.time() - start_external_request_processing)*1000)
         
-        REQUEST_PROCESSING.labels(ZONE, K8S_APP, request.method, request.path, request.remote_addr, ID).observe((time.time() - start_request_processing)*1000)
-        REQUEST_PROCESSING_BUCKET.labels(ZONE, K8S_APP, request.method, request.path, request.remote_addr, ID).observe((time.time() - start_request_processing)*1000)
+        REQUEST_PROCESSING.labels(ZONE, K8S_APP, request.method, request.path, request.remote_addr, ID) \
+            .observe((time.time() - start_request_processing)*1000)
+        REQUEST_PROCESSING_BUCKET.labels(ZONE, K8S_APP, request.method, request.path, request.remote_addr, ID) \
+            .observe((time.time() - start_request_processing)*1000)
 
         # Add trace context propagation headers to the response
         response.headers.update(jaeger_headers)
@@ -280,8 +287,10 @@ class gRPCThread(Thread, pb2_grpc.MicroServiceServicer):
             start_local_processing = time.time()
             body = run_internal_service(my_work_model["internal_service"])
             local_processing_latency = time.time() - start_local_processing
-            INTERNAL_PROCESSING.labels(ZONE, K8S_APP, "grpc", "grpc").observe(local_processing_latency*1000)
-            RESPONSE_SIZE.labels(ZONE, K8S_APP, "grpc", "grpc", remote_address, ID).observe(len(body))
+            INTERNAL_PROCESSING.labels(ZONE, K8S_APP, "grpc", "grpc") \
+                .observe(local_processing_latency*1000)
+            RESPONSE_SIZE.labels(ZONE, K8S_APP, "grpc", "grpc", remote_address, ID) \
+                .observe(len(body))
             app.logger.info("len(body): %d" % len(body))
             app.logger.info("############### INTERNAL SERVICE FINISHED! ###############")
 
@@ -299,9 +308,10 @@ class gRPCThread(Thread, pb2_grpc.MicroServiceServicer):
             app.logger.info("############### EXTERNAL SERVICES FINISHED! ###############")
 
             result = {'text': body, 'status_code': True}
-            EXTERNAL_PROCESSING.labels(ZONE, K8S_APP, "grpc", "grpc").observe((time.time() - start_external_request_processing)*1000)
-            REQUEST_PROCESSING.labels(ZONE, K8S_APP, "grpc", "grpc", remote_address, ID).observe(
-                (time.time() - start_request_processing)*1000)
+            EXTERNAL_PROCESSING.labels(ZONE, K8S_APP, "grpc", "grpc") \
+                .observe((time.time() - start_external_request_processing)*1000)
+            REQUEST_PROCESSING.labels(ZONE, K8S_APP, "grpc", "grpc", remote_address, ID) \
+                .observe((time.time() - start_request_processing)*1000)
             return pb2.MessageResponse(**result)
         except Exception as err:
             app.logger.error("Error: in GetMicroServiceResponse,", err)
