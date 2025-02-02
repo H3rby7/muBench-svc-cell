@@ -31,7 +31,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import random
-import time
 import os
 from concurrent.futures import ThreadPoolExecutor, wait
 import jsonmerge
