@@ -1,28 +1,5 @@
 # Description of Custom Internal Functions
 
-## Colosseum
-
-Function that returns a simple asci art of Colosseum
-
-*Function name*: `colosseum`
-
-*Input Paramenters*: none
-
-## ComputePI
-
-This *single-thread* internal function (included in the service-cell code) stresses the CPU by computing `D` decimal points of pi, where `D` is a random integer in `range_complexity` (e.g. 50,100). The return is a string whose length is a sample of an exp neg random variable with mean `mean_response_size` kBytes  
-
-*Function name*: `compute_pi`
-
-*Default Input Paramenters*:
-
-```json
-{
-    "range_complexity": [50, 100], 
-    "mean_response_size": 10
-}
-```
-
 ## Loader
 
 This *multi-thread* internal function sequentially load the CPU, the memory, the disk and then sleep for a bit. Finally, it returns a string whose length is a sample of an exp neg random variable with mean `mean_response_size` kBytes.
@@ -32,8 +9,6 @@ The CPU stress is performed (if `run`=true) by running `thread_pool_size` parall
 The memory stress is performed (if `run`=true) by allocating `memory_size` kBytes. Then `memory_io` read/write operations of 1 byte are executed sequentially.
 
 The disk stress is performed by creating the file `tmp_file_name`. Writing `disk_write_block_count` blocks of  `disk_write_block_size` bytes. Finally, random accessing each of them once.
-
-The sleep stress is performed (if `run`=true) by sleeping for `sleep_time` seconds.
 
 *Function name*: `loader`
 

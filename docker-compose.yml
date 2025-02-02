@@ -12,8 +12,8 @@ services:
       # Files that are required by runtime
       - ./example:/app/MSConfig
     environment:
-    - APP=ms-500
-    - K8S_APP=ms-500
+    - APP=ms-001
+    - K8S_APP=ms-001
     - ZONE=default
     - PN=4
     - TN=16
