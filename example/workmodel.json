@@ -28,10 +28,6 @@
           "disk_write_block_count": 250,
           "disk_write_block_size": 1024
         },
-        "sleep_stress": {
-          "run": false,
-          "sleep_time": "unsupported"
-        },
         "mean_response_size": 10
       }
     },
