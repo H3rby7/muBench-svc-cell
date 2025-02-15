@@ -45,9 +45,11 @@ params = dict()
 
 def cpu_loader_job(params):
     """
-    Compute pi to X decimals, where X is between params
+    Compute pi N times to X decimals, where X is between params
 
     range_complexity[0] and range_complexity[1]
+
+    and N is params["trials"]
     """
     cpu_load = random.randint(params["range_complexity"][0], params["range_complexity"][1])
     trials = int(params["trials"])
@@ -71,6 +73,11 @@ def cpu_loader_job(params):
         # print(f"Value: 3.{''.join(pi_greco[1:])}\n")
 
 def cpu_loader(params):
+    """
+    Run cpu_loader_job X times in parallel, where
+
+    X = params["thread_pool_size"]
+    """
     start_time = time.time()
     logging.debug("CPU stress start")
     pool_size = int(params["thread_pool_size"])
