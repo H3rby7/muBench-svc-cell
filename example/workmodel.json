@@ -11,8 +11,8 @@
         "cpu_stress": {
           "run": true,
           "range_complexity": [
-            200,
-            500
+            2000,
+            2500
           ],
           "thread_pool_size": 1,
           "trials": 1

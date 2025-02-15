@@ -73,19 +73,16 @@ def cpu_loader(params):
     futures = list()
     for thread in range(pool_size):
         futures.append(pool.submit(cpu_loader_job, params))
-    wait(futures)
+    pool.shutdown()
     run_duration_millis = (time.time() - start_time) * 1000
     logging.debug(f"CPU stress took {run_duration_millis} millis")
     return
 
 def bandwidth_loader(params):
-    start_time = time.time()
-    logging.debug("Network stress start")
+    logging.debug("Creating random response")
     bandwidth_load = random.expovariate(1 / params["mean_response_size"])
     num_chars = int(max(1, 1000 * bandwidth_load))  # Response in kB
     response_body = ''.join(random.choice(string.ascii_letters) for i in range(num_chars))
-    run_duration_millis = (time.time() - start_time) * 1000
-    logging.debug(f"Network stress took {run_duration_millis} millis")
     return response_body
 
 def memory_loader(params):
@@ -106,8 +103,8 @@ def memory_loader(params):
     return dummy_buffer
 
 def disk_loader(params):
-        start_time = time.time()
-        logging.debug("Disk stress - Write stress start")
+        write_start_time = time.time()
+        # logging.debug("Disk stress - Write start")
         filename_base = params["tmp_file_name"]
         rnd_str = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
         filename = f"{rnd_str}-{filename_base}"
@@ -119,11 +116,11 @@ def disk_loader(params):
             os.write(f, buff)
         os.fsync(f)  # force write to disk
         os.close(f)
-        run_duration_millis = (time.time() - start_time) * 1000
-        logging.debug(f"Disk stress - Write stress took {run_duration_millis} millis")
+        write_duration_millis = (time.time() - write_start_time) * 1000
+        logging.debug(f"Disk stress - Write took {write_duration_millis} millis")
 
-        start_time = time.time()
-        logging.debug("Disk stress - Read stress start")
+        read_start_time = time.time()
+        # logging.debug("Disk stress - Read start")
         f = os.open(filename, os.O_RDONLY, 0o777)  # low-level I/O
         # generate random read positions
         offsets = list(range(0, blocks_count * block_size, block_size))
@@ -134,8 +131,9 @@ def disk_loader(params):
             buff = os.read(f, block_size)  # read from position
             if not buff: break  # if EOF reached
         os.close(f)
-        run_duration_millis = (time.time() - start_time) * 1000
-        logging.debug(f"Disk stress - Read stress took {run_duration_millis} millis")
+        read_duration_millis = (time.time() - read_start_time) * 1000
+        logging.debug(f"Disk stress - Read took {read_duration_millis} millis")
+        logging.debug(f"Disk stress - TOTAL took {read_duration_millis + write_duration_millis} millis")
         os.remove(filename)
         return
 
@@ -154,17 +152,20 @@ def loader(input_params):
             # for backward compatibility
             params["mean_response_size"] = params["mean_bandwidth"]
         params_processed = True
+    loader_count = 3
+    pool = ThreadPoolExecutor(loader_count)
     start_time = time.time()
     logging.debug("Loader start")
-    if params['cpu_stress']['run']: 
-        cpu_loader(params['cpu_stress'])
+    if params['cpu_stress']['run']:
+        pool.submit(cpu_loader, params['cpu_stress'])
     if params['memory_stress']['run']:
-        memory_loader(params['memory_stress'])
+        pool.submit(memory_loader, params['memory_stress'])
     if params['disk_stress']['run']:
-        disk_loader(params['disk_stress'])
-    body = bandwidth_loader(params)
+        pool.submit(disk_loader, params['disk_stress'])
+    pool.shutdown()
     run_duration_millis = (time.time() - start_time) * 1000
-    logging.debug(f"Loader took {run_duration_millis} millis")
+    logging.info(f"Loader took {run_duration_millis} millis")
+    body = bandwidth_loader(params)
     return body
 
 if __name__ == '__main__':

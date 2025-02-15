@@ -26,4 +26,3 @@ Simple GET request
 Simple POST request to test the `trace` variant.
 
     curl --header "Content-Type: application/json" --request POST --data "{\"ms-500\":[{}]}" http://localhost/api/v1
-
