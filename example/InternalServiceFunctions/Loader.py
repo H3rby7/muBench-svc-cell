@@ -44,6 +44,11 @@ params_processed = False
 params = dict()
 
 def cpu_loader_job(params):
+    """
+    Compute pi to X decimals, where X is between params
+
+    range_complexity[0] and range_complexity[1]
+    """
     cpu_load = random.randint(params["range_complexity"][0], params["range_complexity"][1])
     trials = int(params["trials"])
 
@@ -86,13 +91,19 @@ def bandwidth_loader(params):
     return response_body
 
 def memory_loader(params):
+    """
+    Read and write X times into a buffer of size N
+
+    X = params["memory_io"]
+
+    N = params["memory_size"]
+    """
     start_time = time.time()
     logging.debug("Memory stress start")
     memory_size = params["memory_size"]
     memory_io = params["memory_io"]
     
     # allocate memory_size kB of memory
-    dummy_buffer = []
     dummy_buffer = ['A' * 1000 for _ in range(0, int(memory_size))]
     
     for i in range(0, int(memory_io)):
@@ -100,7 +111,8 @@ def memory_loader(params):
         dummy_buffer[i % int(memory_size)] = ['A' * 1000] # write operation
     run_duration_millis = (time.time() - start_time) * 1000
     logging.debug(f"Memory stress took {run_duration_millis} millis")
-    return dummy_buffer
+    del dummy_buffer
+    return
 
 def disk_loader(params):
         write_start_time = time.time()
