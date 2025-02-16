@@ -1,0 +1,3 @@
+[submodule "example/InternalServiceFunctions"]
+	path = example/InternalServiceFunctions
+	url = https://github.com/H3rby7/cloudlab-k8s-ee-sched-functions.git
