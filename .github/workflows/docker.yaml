@@ -4,6 +4,8 @@ on:
   push:
     branches: 
       - main
+    tags:
+      - 'v*.*.*'
 
 env:
   IMAGE_NAME: lujoka/mub-cell
@@ -37,7 +39,9 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             # set latest tag for default branch
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}},event=branch
+            # set tag
+            type=semver,pattern={{version}},event=tag
 
       - name: Build and push Docker image
         id: push
